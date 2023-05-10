@@ -12,7 +12,7 @@ class LoadingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_loading)
     }
 
-    fun onClickLoading(view: View) {
+    fun OnClickLoading(view: View) {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

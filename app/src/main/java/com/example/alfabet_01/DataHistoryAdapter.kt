@@ -15,9 +15,9 @@ import java.util.Locale
 
 
 class DataHistoryAdapter: RecyclerView.Adapter<DataHistoryAdapter.DataHistoryHolder>() {
-    private val modelList = ArrayList<Model>()
+    val modelList = ArrayList<Model>()
     class DataHistoryHolder(item: View): RecyclerView.ViewHolder(item){
-        private val binding = ParkinHistoryItemBinding.bind(item)
+        val binding = ParkinHistoryItemBinding.bind(item)
         fun bind(DataHistory: Model) {
             binding.textView9.text = " ${DataHistory.text} \n" + DataHistory.dateString
 

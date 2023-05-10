@@ -55,7 +55,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun onClickHistory(view: View) {
-        val intent = Intent(this, ParkingHistoryActivity::class.java)
+        val intent = Intent(this, ParkinHistoryActivity::class.java)
         if (!modelList.isNullOrEmpty()) intent.putExtra("qwerty", modelList)
         launcherHistory?.launch(intent)
     }
