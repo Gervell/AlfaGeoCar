@@ -5,8 +5,8 @@
     android:id="@+id/constrLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#9E9E9E"
-    tools:context=".ParkinHistoryActivity">
+    android:background="@color/blue_background"
+    tools:context=".ParkingHistoryActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="@string/help_back_text"
-            android:textColor="@color/black"
+            android:textColor="@color/text_color"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
@@ -61,6 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Empty"
+        android:textColor="@color/text_color"
         android:textSize="34sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/recyclerHistory"

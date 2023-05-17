@@ -4,11 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.alfabet_01.databinding.ActivityMainBinding
 import com.example.alfabet_01.databinding.ActivityParkinHistoryBinding
-import com.yandex.mapkit.geometry.Point
 
-class ParkinHistoryActivity : AppCompatActivity() {
+class ParkingHistoryActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityParkinHistoryBinding
     private var historyAdapter = DataHistoryAdapter()
@@ -27,7 +25,7 @@ class ParkinHistoryActivity : AppCompatActivity() {
             binding.recyclerHistory.visibility = View.INVISIBLE
             binding.textView8.visibility = View.VISIBLE
         } else {
-            historyAdapter.addModel(modelList!!)
+            historyAdapter.addModel(modelList)
             init()
         }
     }
