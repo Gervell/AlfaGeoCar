@@ -17,9 +17,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -40,8 +40,9 @@ import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.runtime.image.ImageProvider
 import java.util.Calendar
-import java.util.Date
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,8 +50,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mapKit: MapKit
     private var lastCarPoint = Point(0.0, 0.0)
     private var currentLocation = Point(0.0, 0.0)
-    private var modelList = ArrayList<Model>()
-    private var launcher : ActivityResultLauncher<Intent>? = null
+    private var modelList: ArrayList<Model> = ArrayList<Model>()
+    private var launcherCam : ActivityResultLauncher<Intent>? = null
+    private var launcherSettings : ActivityResultLauncher<Intent>? = null
     private var lastImgUri: Uri? = null
     private lateinit var tapLis: MapObjectTapListener
     private var rewriteDescription = false
@@ -73,11 +75,25 @@ class MainActivity : AppCompatActivity() {
         val location = mapKit.createUserLocationLayer(mapview.mapWindow)
         location.isVisible = true
 
-        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        launcherCam = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
                 findViewById<ImageView>(R.id.imageView7).setImageURI(lastImgUri)
                 Log.d("Tag", "Image set")
+            }
+        }
+
+        launcherSettings = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                val modelListReverted = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    result.data?.getSerializableExtra("modelFromSet", ArrayList<Model>()::class.java)
+                } else {
+                    result.data?.getSerializableExtra("modelFromSet") as ArrayList<Model>?
+                }
+                if (!modelListReverted.isNullOrEmpty()) modelList = modelListReverted
+                else modelList.clear()
+                Log.d("Tag", "Return from Settings")
             }
         }
 
@@ -191,8 +207,8 @@ class MainActivity : AppCompatActivity() {
         else {
             Log.d("Tag", "Location is disable")
             val builder = AlertDialog.Builder(this)
-            builder.setTitle("Geolocation is disabled")
-            builder.setMessage("Enable geolocation in your phone settings so that the app will show your location")
+            builder.setTitle(R.string.Geolocation_is_disabled)
+            builder.setMessage(R.string.Enable_geolocation_text)
             builder.setPositiveButton("OK"){ _, _ ->
                 Log.d("Tag", "Positive")
             }
@@ -208,10 +224,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onClickSettings(view: View) {
         val intent = Intent(this, SettingsActivity::class.java)
-        modelList.reverse()
         intent.putExtra("qwerty", modelList)
-        modelList.reverse()
-        startActivity(intent)
+        launcherSettings?.launch(intent)
     }
 
     fun onClickHelp(view: View) {
@@ -268,7 +282,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onClickSaveDescription(view: View) {
         val descriptionText = findViewById<TextInputEditText>(R.id.descrTextInput).text.toString()
-        val lastImgPath = if (lastImgUri != null) lastImgUri!!.toString() else ""
+        val lastImgPath = if (lastImgUri != null) lastImgUri!!.toString() else null
         if (rewriteDescription) {
             val lastID = modelList.lastIndex
             modelList[lastID].text = descriptionText
@@ -276,13 +290,16 @@ class MainActivity : AppCompatActivity() {
             findViewById<ConstraintLayout>(R.id.constrDescrInput).visibility = View.GONE
             rewriteDescription = false
         } else {
-            modelList.add(Model(lastCarPoint.latitude, lastCarPoint.longitude, descriptionText, lastImgPath, Calendar.getInstance().time))
+            val datetime = Calendar.getInstance().time
+            val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(datetime)
+            modelList.add(Model(lastCarPoint.latitude, lastCarPoint.longitude, descriptionText, lastImgPath, datetime, dateString))
             findViewById<ConstraintLayout>(R.id.constrDescrInput).visibility = View.GONE
         }
 
     }
 
     fun onClickAddPhoto(view: View){
+        Log.d("Tag", "onClickAddPhoto")
         val ass = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
         if (ass) {
             val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -294,11 +311,15 @@ class MainActivity : AppCompatActivity() {
                 BuildConfig.APPLICATION_ID + "." + localClassName + ".provider",
                 file
             )
-
+            Log.d("Tag", extraOutput.path!!)
+            Log.d("Tag", extraOutput.encodedPath!!)
             lastImgUri = extraOutput
             takePicture.putExtra(MediaStore.EXTRA_OUTPUT, extraOutput)
 
-            launcher!!.launch(takePicture)
+            launcherCam!!.launch(takePicture)
+        }
+        else {
+            Toast.makeText(this, R.string.toast_camera_perm, Toast.LENGTH_LONG).show()
         }
     }
 

@@ -18,4 +18,9 @@
     <string name="help_get_permission_start">Start</string>
     <string name="apply_changes">Apply changes</string>
     <string name="functional_is_limited_text">The functionality is limited.</string>
+    <string name="parking_information">Parking Information</string>
+    <string name="toast_camera_perm">Allow using the camera in the settings</string>
+    <string name="Geolocation_is_disabled">Geolocation is disabled</string>
+    <string name="Enable_geolocation_text">Enable geolocation in your phone settings so that the app will show your location</string>
+    <string name="empty">Empty</string>
 </resources>

@@ -18,7 +18,7 @@
         android:theme="@style/Theme.Design.Light.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".ParkinExtendedActivity"
+            android:name=".ParkingExtendedActivity"
             android:exported="false" />
         <activity
             android:name=".ParkingHistoryActivity"
